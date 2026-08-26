@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AG Premier Transportation | Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{--bg:#090909;--panel:#151515;--line:#333;--gold:#d7af42;--text:#f7f7f7;--muted:#aaa}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+    header{background:#121212;border-bottom:2px solid var(--gold);padding:22px}
+    header h1{margin:0;color:var(--gold)}
+    header p{margin:6px 0 0;color:var(--muted)}
+    .container{max-width:1200px;margin:auto;padding:25px}
+    .panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+    .toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+    button{background:var(--gold);color:#111;border:none;padding:12px 18px;border-radius:8px;font-weight:700;cursor:pointer}
+    button.secondary{background:#2b2b2b;color:#fff}
+    button.danger{background:#7d2525;color:#fff}
+    input{width:100%;padding:12px;border-radius:8px;border:1px solid #444;background:#0f0f0f;color:#fff;margin:6px 0 12px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 25px}
+    .label{color:#999;font-size:13px}
+    .value{margin-bottom:10px;word-break:break-word}
+    .status{display:inline-block;padding:5px 9px;border-radius:20px;background:#333}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    #message,#loginMessage{color:#bbb;margin-bottom:15px}
+    .hidden{display:none}
+    @media(max-width:700px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>AG Premier Transportation</h1>
+  <p>Booking Management Dashboard</p>
+</header>
+
+<div class="container">
+  <section id="loginPanel" class="panel">
+    <h2>Admin Sign In</h2>
+    <p id="loginMessage">Sign in with the AG Premier admin account.</p>
+    <label>Email</label>
+    <input id="email" type="email" value="accessgrantedag@gmail.com" autocomplete="username" />
+    <label>Password</label>
+    <input id="password" type="password" autocomplete="current-password" />
+    <button id="loginBtn">Sign In</button>
+  </section>
+
+  <section id="dashboard" class="hidden">
+    <div class="toolbar">
+      <button id="refreshBtn">Refresh Bookings</button>
+      <button id="logoutBtn" class="secondary">Sign Out</button>
+    </div>
+    <div id="message">Loading booking requests...</div>
+    <div id="bookings"></div>
+  </section>
+</div>
+
+<script>
+const SUPABASE_URL = "https://cwbqdzixsurgmivbannp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_X8VPZDYaJuIpCA2BwWctUw_Mg0jrQuV";
+const FUNCTION_URL = SUPABASE_URL + "/functions/v1/admin-bookings";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const loginPanel = document.getElementById("loginPanel");
+const dashboard = document.getElementById("dashboard");
+const loginMessage = document.getElementById("loginMessage");
+const message = document.getElementById("message");
+const bookingsEl = document.getElementById("bookings");
+
+document.getElementById("loginBtn").addEventListener("click", signIn);
+document.getElementById("logoutBtn").addEventListener("click", signOut);
+document.getElementById("refreshBtn").addEventListener("click", loadBookings);
+
+async function signIn(){
+  loginMessage.textContent = "Signing in...";
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if(error){
+    loginMessage.textContent = error.message;
+    return;
+  }
+  await showDashboard();
+}
+
+async function signOut(){
+  await sb.auth.signOut();
+  dashboard.classList.add("hidden");
+  loginPanel.classList.remove("hidden");
+  document.getElementById("password").value = "";
+  loginMessage.textContent = "Signed out.";
+}
+
+async function showDashboard(){
+  const { data } = await sb.auth.getSession();
+  if(!data.session){
+    dashboard.classList.add("hidden");
+    loginPanel.classList.remove("hidden");
+    return;
+  }
+  loginPanel.classList.add("hidden");
+  dashboard.classList.remove("hidden");
+  await loadBookings();
+}
+
+async function adminRequest(payload){
+  const { data } = await sb.auth.getSession();
+  const token = data.session?.access_token;
+  if(!token) throw new Error("Not signed in.");
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer " + token,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+  const result = await response.json().catch(()=>({}));
+  if(!response.ok) throw new Error(result.error || "Admin request failed.");
+  return result;
+}
+
+async function loadBookings(){
+  message.textContent = "Loading booking requests...";
+  bookingsEl.innerHTML = "";
+  try{
+    const result = await adminRequest({ action: "list" });
+    const bookings = result.bookings || [];
+    if(!bookings.length){
+      message.textContent = "No booking requests found.";
+      return;
+    }
+    message.textContent = bookings.length + " booking request(s) found.";
+    bookings.forEach(renderBooking);
+  }catch(error){
+    console.error(error);
+    message.textContent = error.message;
+  }
+}
+
+function renderBooking(b){
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <h2>${safe(b.confirmation_number || "Booking Request")}</h2>
+    <div class="grid">
+      ${field("Customer", b.full_name)}
+      ${field("Status", `<span class="status">${safe(b.status)}</span>`, true)}
+      ${field("Phone", b.phone)}
+      ${field("Email", b.email)}
+      ${field("Service", b.service_type)}
+      ${field("Vehicle", b.vehicle_preference)}
+      ${field("Passengers", b.passengers)}
+      ${field("Date", b.pickup_date)}
+      ${field("Preferred Time", b.preferred_time)}
+      ${field("Pickup", b.pickup_location)}
+      ${field("Drop-off", b.dropoff_location)}
+      ${field("Notes", b.trip_notes)}
+    </div>
+    <div class="actions">
+      <button data-status="approved">Approve</button>
+      <button data-status="declined" class="danger">Decline</button>
+      <button data-status="completed" class="secondary">Completed</button>
+      <button data-status="cancelled" class="secondary">Cancelled</button>
+    </div>`;
+  card.querySelectorAll("[data-status]").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      btn.disabled = true;
+      try{
+        await adminRequest({ action:"update_status", id:b.id, status:btn.dataset.status });
+        await loadBookings();
+      }catch(error){
+        alert(error.message);
+      }finally{
+        btn.disabled = false;
+      }
+    });
+  });
+  bookingsEl.appendChild(card);
+}
+
+function field(label, value, html=false){
+  const v = value ?? "—";
+  return `<div><div class="label">${safe(label)}</div><div class="value">${html ? v : safe(v)}</div></div>`;
+}
+function safe(value){
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+sb.auth.onAuthStateChange((_event, session)=>{
+  if(session) showDashboard();
+});
+showDashboard();
+</script>
+</body>
+</html>
