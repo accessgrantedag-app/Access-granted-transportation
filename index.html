@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AG Premier Transportation</title>
+  <meta name="theme-color" content="#0a0a0a" />
+  <style>
+    :root{
+      --bg:#090909;
+      --panel:#121212;
+      --panel2:#181818;
+      --gold:#d7af42;
+      --gold2:#f2d47a;
+      --text:#f7f7f7;
+      --muted:#b9b9b9;
+      --line:#2a2a2a;
+      --danger:#ff6b6b;
+      --ok:#7bd88f;
+      --radius:20px;
+      --shadow:0 18px 50px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background:linear-gradient(180deg,#050505,#0b0b0b 45%,#060606);color:var(--text);
+    }
+    a{color:inherit;text-decoration:none}
+    .wrap{max-width:1180px;margin:auto;padding:0 20px}
+    header{
+      position:sticky;top:0;z-index:50;background:rgba(8,8,8,.88);backdrop-filter:blur(14px);
+      border-bottom:1px solid rgba(215,175,66,.18)
+    }
+    .nav{height:72px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.3px}
+    .logo{
+      width:42px;height:42px;border:1px solid var(--gold);border-radius:14px;display:grid;place-items:center;
+      color:var(--gold2);font-weight:900;background:linear-gradient(145deg,#1b1b1b,#090909)
+    }
+    nav{display:flex;gap:24px;align-items:center}
+    nav a{color:#ddd;font-size:14px}
+    nav a:hover{color:var(--gold2)}
+    .btn{
+      border:0;border-radius:14px;padding:13px 18px;font-weight:800;cursor:pointer;
+      background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111;box-shadow:0 10px 28px rgba(215,175,66,.18)
+    }
+    .btn.secondary{background:#1c1c1c;color:#fff;border:1px solid #333;box-shadow:none}
+    .hero{
+      min-height:76vh;display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:40px;padding:78px 0 50px
+    }
+    .eyebrow{color:var(--gold2);font-weight:800;text-transform:uppercase;letter-spacing:2px;font-size:12px}
+    h1{font-size:clamp(48px,7vw,88px);line-height:.95;margin:12px 0 22px;letter-spacing:-3px}
+    .hero p{font-size:18px;line-height:1.7;color:var(--muted);max-width:650px}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+    .hero-card{
+      min-height:460px;border-radius:32px;padding:24px;position:relative;overflow:hidden;
+      background:
+        radial-gradient(circle at 80% 20%,rgba(215,175,66,.24),transparent 30%),
+        linear-gradient(160deg,#1c1c1c,#0e0e0e);
+      border:1px solid rgba(215,175,66,.28);box-shadow:var(--shadow)
+    }
+    .vehicle{
+      position:absolute;left:8%;right:8%;bottom:12%;height:210px;border-radius:40px 40px 24px 24px;
+      background:linear-gradient(180deg,#1f1f1f,#070707);border:1px solid #343434;
+      box-shadow:0 30px 55px rgba(0,0,0,.7)
+    }
+    .vehicle:before{
+      content:"";position:absolute;left:12%;right:12%;top:-68px;height:95px;border-radius:36px 36px 12px 12px;
+      background:linear-gradient(180deg,#202020,#0f0f0f);border:1px solid #303030
+    }
+    .vehicle:after{
+      content:"AG";position:absolute;right:8%;top:38%;color:var(--gold2);font-size:34px;font-weight:900;letter-spacing:2px
+    }
+    .wheel{position:absolute;bottom:-24px;width:72px;height:72px;border-radius:50%;background:#050505;border:11px solid #222}
+    .w1{left:14%}.w2{right:14%}
+    section{padding:80px 0}
+    .section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:28px}
+    .section-head h2{font-size:40px;margin:0;letter-spacing:-1.2px}
+    .section-head p{color:var(--muted);max-width:580px;line-height:1.6}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{
+      background:linear-gradient(180deg,#151515,#101010);border:1px solid var(--line);border-radius:var(--radius);
+      padding:24px;box-shadow:var(--shadow)
+    }
+    .card h3{margin:10px 0 8px}
+    .card p{color:var(--muted);line-height:1.6;margin:0}
+    .icon{font-size:28px}
+    .fleet{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .fleet-card{
+      min-height:330px;border-radius:26px;padding:28px;position:relative;overflow:hidden;
+      border:1px solid #2d2d2d;background:
+      radial-gradient(circle at 75% 30%,rgba(215,175,66,.22),transparent 26%),#121212
+    }
+    .fleet-card .tag{display:inline-block;background:#191919;border:1px solid #383838;border-radius:999px;padding:8px 11px;font-size:12px;color:#ddd}
+    .fleet-card .sketch{
+      position:absolute;left:8%;right:8%;bottom:32px;height:110px;border:1px solid #333;border-radius:36px 48px 18px 18px;
+      background:linear-gradient(180deg,#252525,#0a0a0a)
+    }
+    .fleet-card .sketch:after{content:"";position:absolute;left:13%;right:13%;bottom:-12px;height:30px;background:
+      radial-gradient(circle at 10% 50%,#111 0 13px,transparent 14px),
+      radial-gradient(circle at 90% 50%,#111 0 13px,transparent 14px)}
+    .booking-layout{display:grid;grid-template-columns:.95fr 1.05fr;gap:22px;align-items:start}
+    .calendar{background:#101010;border:1px solid #2b2b2b;border-radius:22px;padding:20px}
+    .cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .cal-head button{background:#1d1d1d;color:#fff;border:1px solid #333;border-radius:12px;width:40px;height:40px;cursor:pointer}
+    .week,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
+    .week div{font-size:12px;color:#8f8f8f;text-align:center;padding:8px 0}
+    .day{
+      aspect-ratio:1;border-radius:12px;border:1px solid #242424;background:#161616;color:#eee;
+      display:grid;place-items:center;cursor:pointer;font-size:13px
+    }
+    .day:hover{border-color:#6f5a20}
+    .day.muted{opacity:.26;pointer-events:none}
+    .day.selected{background:var(--gold);color:#111;font-weight:900;border-color:var(--gold2)}
+    .day.today{outline:1px solid var(--gold2)}
+    .slots{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+    .slot{padding:10px 12px;border-radius:12px;border:1px solid #303030;background:#171717;color:#ddd;cursor:pointer}
+    .slot.selected{background:#f0d072;color:#111;border-color:#f0d072;font-weight:800}
+    form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    label{font-size:12px;color:#c7c7c7;display:block;margin:0 0 7px}
+    input,select,textarea{
+      width:100%;background:#101010;color:#fff;border:1px solid #333;border-radius:13px;padding:13px 14px;outline:none
+    }
+    input:focus,select:focus,textarea:focus{border-color:#9b7c2a}
+    textarea{min-height:112px;resize:vertical}
+    .full{grid-column:1/-1}
+    .notice{padding:14px;border-radius:14px;background:#121212;border:1px solid #2d2d2d;color:#c9c9c9;font-size:13px;line-height:1.5}
+    .confirm{display:none;margin-top:15px;padding:14px;border-radius:14px;background:rgba(123,216,143,.08);border:1px solid rgba(123,216,143,.35);color:#dff6e3}
+    .about{display:grid;grid-template-columns:1fr 1fr;gap:30px}
+    .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+    .stat{background:#121212;border:1px solid #292929;border-radius:16px;padding:18px}
+    .stat b{display:block;color:var(--gold2);font-size:24px}
+    footer{border-top:1px solid #242424;padding:34px 0 50px;color:#9d9d9d}
+    .footer{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    .mobile-toggle{display:none;background:#161616;color:#fff;border:1px solid #333;border-radius:12px;padding:10px 12px}
+    @media(max-width:900px){
+      nav{display:none;position:absolute;top:72px;left:0;right:0;background:#0b0b0b;border-bottom:1px solid #242424;padding:20px;flex-direction:column}
+      nav.open{display:flex}
+      .mobile-toggle{display:block}
+      .hero,.booking-layout,.about{grid-template-columns:1fr}
+      .hero{padding-top:48px}
+      .grid{grid-template-columns:1fr}
+      .fleet{grid-template-columns:1fr}
+    }
+    @media(max-width:620px){
+      h1{font-size:52px}
+      .section-head{display:block}
+      form{grid-template-columns:1fr}
+      .full{grid-column:auto}
+      .stat-row{grid-template-columns:1fr}
+    }
+  
+    .brand-logo-img{width:42px;height:42px;object-fit:contain;border-radius:12px;background:#fff;padding:3px}
+    .hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.72}
+    .hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.2),rgba(0,0,0,.05)),linear-gradient(0deg,rgba(0,0,0,.72),transparent 60%)}
+    .hero-copy{position:absolute;left:28px;right:28px;bottom:26px;z-index:2}
+    .fleet-photo{width:100%;height:220px;object-fit:cover;border-radius:18px;margin-top:18px;border:1px solid #333}
+    .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .gallery figure{margin:0;position:relative;overflow:hidden;border-radius:20px;background:#111;border:1px solid #292929;min-height:260px}
+    .gallery img{width:100%;height:100%;min-height:260px;object-fit:cover;display:block;transition:transform .25s ease}
+    .gallery figure:hover img{transform:scale(1.025)}
+    .gallery figcaption{position:absolute;left:0;right:0;bottom:0;padding:35px 16px 14px;background:linear-gradient(transparent,rgba(0,0,0,.85));font-weight:700}
+    .gallery .tall{grid-row:span 2}
+    @media(max-width:900px){.gallery{grid-template-columns:1fr 1fr}}
+    @media(max-width:620px){.gallery{grid-template-columns:1fr}.gallery .tall{grid-row:auto}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a href="#home" class="brand"><img class="brand-logo-img" src="assets/ag-logo.jpg" alt="AG logo"><span>AG Premier Transportation</span></a>
+    <button class="mobile-toggle" id="menuBtn">Menu</button>
+    <nav id="nav">
+      <a href="#services">Services</a>
+      <a href="#fleet">Fleet</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#about">About</a>
+      <a href="#book">Book</a>
+      <a href="#contact">Contact</a>
+      <a href="#book" class="btn">Book a Ride</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section id="home">
+    <div class="wrap hero">
+      <div>
+        <div class="eyebrow">Premium transportation • DMV & Baltimore</div>
+        <h1>Your ride.<br><span style="color:var(--gold2)">Granted.</span></h1>
+        <p>Private transportation for airport runs, events, business travel, nights out and custom trips. Choose your vehicle, pick your date, and send your trip request in minutes.</p>
+        <div class="hero-actions">
+          <a class="btn" href="#book">Book Your Trip</a>
+          <a class="btn secondary" href="#fleet">View the Fleet</a>
+        </div>
+      </div>
+      <div class="hero-card" aria-label="AG Premier Transportation fleet">
+        <img class="hero-photo" src="assets/fleet-sprinter-escalade.jpg" alt="AG Premier Transportation Mercedes Sprinter and Cadillac Escalade">
+        <div class="hero-overlay"></div>
+        <div class="hero-copy">
+          <div class="eyebrow">Luxury • Reliable • Professional</div>
+          <h2 style="font-size:38px;margin:8px 0">Our actual fleet.</h2>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="wrap">
+      <div class="section-head">
+        <div><div class="eyebrow">Services</div><h2>Transportation for every occasion</h2></div>
+        <p>From simple point-to-point rides to group transportation and special events, clients can request the trip that fits their needs.</p>
+      </div>
+      <div class="grid">
+        <div class="card"><div class="icon">✈️</div><h3>Airport Transportation</h3><p>Comfortable scheduled pickup and drop-off for local and regional airports.</p></div>
+        <div class="card"><div class="icon">🎉</div><h3>Private Events</h3><p>Birthdays, weddings, concerts, dinners, nightlife and other special occasions.</p></div>
+        <div class="card"><div class="icon">💼</div><h3>Corporate Travel</h3><p>Professional transportation for meetings, clients, executives and business events.</p></div>
+        <div class="card"><div class="icon">👥</div><h3>Group Travel</h3><p>Request larger-capacity transportation for groups, outings and celebrations.</p></div>
+        <div class="card"><div class="icon">🛣️</div><h3>Custom Trips</h3><p>Hourly, one-way, round-trip and custom itinerary requests based on your schedule.</p></div>
+        <div class="card"><div class="icon">⭐</div><h3>VIP Service</h3><p>Premium private transportation with a focus on comfort, privacy and reliability.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="fleet">
+    <div class="wrap">
+      <div class="section-head">
+        <div><div class="eyebrow">Fleet</div><h2>Choose your ride</h2></div>
+        <p>Replace the sample vehicle artwork with your real professional photos when you're ready.</p>
+      </div>
+      <div class="fleet">
+        <div class="fleet-card">
+          <span class="tag">Group / Event Travel</span>
+          <h3 style="font-size:30px">Mercedes Sprinter</h3>
+          <p style="color:var(--muted);max-width:450px">A spacious choice for groups, events, airport trips and premium outings.</p>
+          <img class="fleet-photo" src="assets/sprinter-airport.jpg" alt="Mercedes Sprinter at airport">
+        </div>
+        <div class="fleet-card">
+          <span class="tag">Private / Executive Travel</span>
+          <h3 style="font-size:30px">Cadillac Escalade</h3>
+          <p style="color:var(--muted);max-width:450px">Luxury SUV transportation for private rides, airport service and executive travel.</p>
+          <img class="fleet-photo" src="assets/escalade-night.jpg" alt="Cadillac Escalade at night">
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <section id="gallery">
+    <div class="wrap">
+      <div class="section-head">
+        <div><div class="eyebrow">Gallery</div><h2>Real rides. Real occasions.</h2></div>
+        <p>A look at AG Premier Transportation serving airport trips, private groups, events and special occasions.</p>
+      </div>
+      <div class="gallery">
+        <figure><img src="assets/sprinter-hotel.jpg" alt="Mercedes Sprinter at hotel"><figcaption>Group & Hotel Transportation</figcaption></figure>
+        <figure class="tall"><img src="assets/sprinter-interior-guests.jpg" alt="Guests inside Mercedes Sprinter"><figcaption>Comfortable Group Travel</figcaption></figure>
+        <figure><img src="assets/sprinter-event-group.jpg" alt="Group in front of Mercedes Sprinter"><figcaption>Private Events</figcaption></figure>
+        <figure><img src="assets/sprinter-red-carpet.jpg" alt="Mercedes Sprinter red carpet setup"><figcaption>Special Occasions</figcaption></figure>
+        <figure><img src="assets/sprinter-city.jpg" alt="Mercedes Sprinter in city"><figcaption>City Transportation</figcaption></figure>
+        <figure><img src="assets/client-event.jpg" alt="Transportation clients at event"><figcaption>Event Transportation</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap about">
+      <div>
+        <div class="eyebrow">About Us</div>
+        <h2 style="font-size:42px;margin:10px 0">Transportation built around your schedule.</h2>
+        <p style="color:var(--muted);line-height:1.8">AG Premier Transportation provides private transportation for clients who value convenience, comfort and dependable service. Use this app to learn about the business, view the fleet and request a trip without having to make a phone call first.</p>
+      </div>
+      <div>
+        <div class="stat-row">
+          <div class="stat"><b>DMV</b><span>Primary service area</span></div>
+          <div class="stat"><b>24/7</b><span>Booking requests</span></div>
+          <div class="stat"><b>2</b><span>Premium vehicle options</span></div>
+        </div>
+        <div class="notice" style="margin-top:16px">
+          This demo app accepts booking requests and stores them on the customer's device. For a live business launch, connect it to your email/SMS, payment processor, and a secure database.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="book">
+    <div class="wrap">
+      <div class="section-head">
+        <div><div class="eyebrow">Booking</div><h2>Request your transportation</h2></div>
+        <p>Select a date on the calendar, choose a preferred time, then enter your trip and contact information.</p>
+      </div>
+      <div class="booking-layout">
+        <div>
+          <div class="calendar">
+            <div class="cal-head">
+              <button id="prevMonth" aria-label="Previous month">‹</button>
+              <strong id="monthLabel"></strong>
+              <button id="nextMonth" aria-label="Next month">›</button>
+            </div>
+            <div class="week"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>
+            <div class="days" id="days"></div>
+            <div class="slots" id="slots"></div>
+          </div>
+          <div class="notice" style="margin-top:14px">
+            Booking requests are not confirmed until AG Premier Transportation accepts the trip and sends confirmation.
+          </div>
+        </div>
+
+        <div class="card">
+          <form id="bookingForm">
+            <div><label>Full Name *</label><input name="name" required placeholder="Your name"></div>
+            <div><label>Phone Number *</label><input name="phone" required placeholder="(555) 555-5555"></div>
+            <div><label>Email *</label><input type="email" name="email" required placeholder="you@example.com"></div>
+            <div><label>Number of Passengers *</label><input type="number" min="1" name="passengers" required value="1"></div>
+
+            <div><label>Service Type *</label>
+              <select name="service" required>
+                <option value="">Choose service</option>
+                <option>Airport Transportation</option>
+                <option>Private Event</option>
+                <option>Corporate Travel</option>
+                <option>Group Travel</option>
+                <option>Custom Trip</option>
+                <option>VIP Service</option>
+              </select>
+            </div>
+            <div><label>Vehicle Preference</label>
+              <select name="vehicle">
+                <option>No preference</option>
+                <option>Mercedes Sprinter</option>
+                <option>Cadillac Escalade</option>
+              </select>
+            </div>
+
+            <div class="full"><label>Pickup Location *</label><input name="pickup" required placeholder="Address, airport or venue"></div>
+            <div class="full"><label>Drop-off Location *</label><input name="dropoff" required placeholder="Destination"></div>
+            <div><label>Selected Date *</label><input id="selectedDate" name="date" readonly required placeholder="Choose on calendar"></div>
+            <div><label>Preferred Time *</label><input id="selectedTime" name="time" readonly required placeholder="Choose a time"></div>
+            <div class="full"><label>Trip Notes</label><textarea name="notes" placeholder="Round trip? Flight number? Stops? Event details? Special requests?"></textarea></div>
+            <div class="full">
+              <button class="btn" type="submit" style="width:100%">Send Booking Request</button>
+              <div class="confirm" id="confirm"></div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap">
+      <div class="section-head">
+        <div><div class="eyebrow">Contact</div><h2>Questions before booking?</h2></div>
+        <p>Replace the sample information below with your actual business phone, email and social links.</p>
+      </div>
+      <div class="grid">
+        <div class="card"><h3>Call / Text</h3><p>(555) 555-0199</p></div>
+        <div class="card"><h3>Email</h3><p>bookings@agpremiertransportation.com</p></div>
+        <div class="card"><h3>Service Area</h3><p>Baltimore • Washington, DC • Maryland • Virginia</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap footer">
+    <div>© <span id="year"></span> AG Premier Transportation</div>
+    <div>Private Transportation • Airport • Events • Corporate • Custom Trips</div>
+  </div>
+</footer>
+
+<script>
+  const menuBtn = document.getElementById('menuBtn');
+  const nav = document.getElementById('nav');
+  menuBtn.addEventListener('click',()=>nav.classList.toggle('open'));
+  nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('open')));
+
+  const daysEl = document.getElementById('days');
+  const monthLabel = document.getElementById('monthLabel');
+  const selectedDateInput = document.getElementById('selectedDate');
+  const selectedTimeInput = document.getElementById('selectedTime');
+  const slotsEl = document.getElementById('slots');
+  const now = new Date();
+  let viewDate = new Date(now.getFullYear(), now.getMonth(), 1);
+  let selectedDate = null;
+
+  const slotTimes = ["6:00 AM","8:00 AM","10:00 AM","12:00 PM","2:00 PM","4:00 PM","6:00 PM","8:00 PM","10:00 PM"];
+
+  function fmtDate(d){
+    return d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+  }
+
+  function renderSlots(){
+    slotsEl.innerHTML = '<div style="width:100%;font-size:12px;color:#999;margin-top:4px">Preferred pickup time</div>';
+    slotTimes.forEach(t=>{
+      const b=document.createElement('button');
+      b.type='button'; b.className='slot'; b.textContent=t;
+      b.onclick=()=>{
+        [...slotsEl.querySelectorAll('.slot')].forEach(x=>x.classList.remove('selected'));
+        b.classList.add('selected'); selectedTimeInput.value=t;
+      };
+      slotsEl.appendChild(b);
+    });
+  }
+
+  function renderCalendar(){
+    daysEl.innerHTML='';
+    const y=viewDate.getFullYear(), m=viewDate.getMonth();
+    monthLabel.textContent=viewDate.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+    const firstDay=new Date(y,m,1).getDay();
+    const total=new Date(y,m+1,0).getDate();
+    for(let i=0;i<firstDay;i++){
+      const x=document.createElement('div');x.className='day muted';daysEl.appendChild(x);
+    }
+    for(let d=1;d<=total;d++){
+      const date=new Date(y,m,d);
+      const b=document.createElement('button'); b.type='button'; b.className='day'; b.textContent=d;
+      const midnightNow=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+      if(date<midnightNow){b.classList.add('muted');}
+      if(date.toDateString()===now.toDateString()) b.classList.add('today');
+      if(selectedDate && date.toDateString()===selectedDate.toDateString()) b.classList.add('selected');
+      if(!b.classList.contains('muted')){
+        b.onclick=()=>{
+          selectedDate=date;
+          selectedDateInput.value=fmtDate(date);
+          selectedTimeInput.value='';
+          renderCalendar(); renderSlots();
+        };
+      }
+      daysEl.appendChild(b);
+    }
+  }
+
+  document.getElementById('prevMonth').onclick=()=>{
+    const candidate=new Date(viewDate.getFullYear(),viewDate.getMonth()-1,1);
+    const currentMonth=new Date(now.getFullYear(),now.getMonth(),1);
+    if(candidate>=currentMonth){viewDate=candidate;renderCalendar();}
+  };
+  document.getElementById('nextMonth').onclick=()=>{
+    viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()+1,1);renderCalendar();
+  };
+
+  renderCalendar(); renderSlots();
+  document.getElementById('year').textContent=new Date().getFullYear();
+
+  const form=document.getElementById('bookingForm');
+  form.addEventListener('submit',e=>{
+    e.preventDefault();
+    if(!selectedDateInput.value || !selectedTimeInput.value){
+      alert('Please choose a date and preferred time.');
+      return;
+    }
+    const data=Object.fromEntries(new FormData(form).entries());
+    data.id='AG-'+Date.now().toString().slice(-7);
+    data.createdAt=new Date().toISOString();
+    const bookings=JSON.parse(localStorage.getItem('ag_bookings')||'[]');
+    bookings.push(data);
+    localStorage.setItem('ag_bookings',JSON.stringify(bookings));
+    const confirm=document.getElementById('confirm');
+    confirm.style.display='block';
+    confirm.innerHTML=`Request received. Your confirmation number is <strong>${data.id}</strong>. This demo stores the request on this device.`;
+    confirm.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+</script>
+</body>
+</html>
