@@ -59,6 +59,13 @@
   <option value="cancelled">Cancelled</option>
 </select>
     </div>
+    <div id="bookingStats">
+  <strong>Total: <span id="totalCount">0</span></strong>
+  <strong>Pending: <span id="pendingCount">0</span></strong>
+  <strong>Approved: <span id="approvedCount">0</span></strong>
+  <strong>Completed: <span id="completedCount">0</span></strong>
+  <strong>Cancelled: <span id="cancelledCount">0</span></strong>
+</div>
     <div id="message">Loading booking requests...</div>
     <div id="bookings"></div>
   </section>
@@ -136,6 +143,11 @@ async function loadBookings(){
   try{
     const result = await adminRequest({ action: "list" });
     const bookings = result.bookings || [];
+    document.getElementById("totalCount").textContent = bookings.length;
+    document.getElementById("pendingCount").textContent = bookings.filter(b => b.status === "pending").length;
+    document.getElementById("approvedCount").textContent = bookings.filter(b => b.status === "approved").length;
+    document.getElementById("completedCount").textContent = bookings.filter(b => b.status === "completed").length;
+    document.getElementById("cancelledCount").textContent = bookings.filter(b => b.status === "cancelled").length;
     const statusFilter = document.getElementById("statusFilter").value;
 const filteredBookings = statusFilter === "all"
   ? bookings
