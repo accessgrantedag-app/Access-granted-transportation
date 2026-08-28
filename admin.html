@@ -50,6 +50,14 @@
     <div class="toolbar">
       <button id="refreshBtn">Refresh Bookings</button>
       <button id="logoutBtn" class="secondary">Sign Out</button>
+   <select id="statusFilter">
+  <option value="all">All Bookings</option>
+  <option value="pending">Pending</option>
+  <option value="approved">Approved</option>
+  <option value="declined">Declined</option>
+  <option value="completed">Completed</option>
+  <option value="cancelled">Cancelled</option>
+</select>
     </div>
     <div id="message">Loading booking requests...</div>
     <div id="bookings"></div>
@@ -71,6 +79,7 @@ const bookingsEl = document.getElementById("bookings");
 document.getElementById("loginBtn").addEventListener("click", signIn);
 document.getElementById("logoutBtn").addEventListener("click", signOut);
 document.getElementById("refreshBtn").addEventListener("click", loadBookings);
+  document.getElementById("statusFilter").addEventListener("change", loadBookings);
 
 async function signIn(){
   loginMessage.textContent = "Signing in...";
@@ -127,12 +136,16 @@ async function loadBookings(){
   try{
     const result = await adminRequest({ action: "list" });
     const bookings = result.bookings || [];
+    const statusFilter = document.getElementById("statusFilter").value;
+const filteredBookings = statusFilter === "all"
+  ? bookings
+  : bookings.filter(b => b.status === statusFilter);
     if(!bookings.length){
       message.textContent = "No booking requests found.";
       return;
     }
-    message.textContent = bookings.length + " booking request(s) found.";
-    bookings.forEach(renderBooking);
+   message.textContent = filteredBookings.length + " booking request(s) found.";
+filteredBookings.forEach(renderBooking);
   }catch(error){
     console.error(error);
     message.textContent = error.message;
