@@ -337,7 +337,26 @@
             <div class="full"><label>Pickup Location *</label><input name="pickup" required placeholder="Address, airport or venue"></div>
             <div class="full"><label>Drop-off Location *</label><input name="dropoff" required placeholder="Destination"></div>
             <div><label>Selected Date *</label><input id="selectedDate" name="date" readonly required placeholder="Choose on calendar"></div>
-            <div><label>Preferred Time *</label><input id="selectedTime" name="time" required placeholder="Choose a time">
+            <div>
+  <label>Preferred Time *</label>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+    <select id="timeHour" required>
+      <option value="">Hour</option>
+      <option>1</option><option>2</option><option>3</option><option>4</option>
+      <option>5</option><option>6</option><option>7</option><option>8</option>
+      <option>9</option><option>10</option><option>11</option><option>12</option>
+    </select>
+    <select id="timeMinute" required>
+      <option value="">Min</option>
+      <option>00</option><option>15</option><option>30</option><option>45</option>
+    </select>
+    <select id="timePeriod" required>
+      <option value="">AM/PM</option>
+      <option>AM</option><option>PM</option>
+    </select>
+  </div>
+  <input type="hidden" id="selectedTime" name="time">
+</div>
             </div> <div class="full"><label>Trip Notes</label><textarea name="notes" placeholder="Round trip? Flight number? Stops? Event details? Special requests?"></textarea></div>
             <div class="full">
               <button class="btn" type="submit" style="width:100%">Send Booking Request</button>
@@ -380,30 +399,36 @@
   const daysEl = document.getElementById('days');
   const monthLabel = document.getElementById('monthLabel');
   const selectedDateInput = document.getElementById('selectedDate');
-  const selectedTimeInput = document.getElementById('selectedTime');
+  const selectedTimeInput = document.getElementById('selectedTime'); 
+  const timeHour = document.getElementById('timeHour');
+const timeMinute = document.getElementById('timeMinute');
+const timePeriod = document.getElementById('timePeriod');
+
+function updateSelectedTime(){
+  if(timeHour.value && timeMinute.value && timePeriod.value){
+    selectedTimeInput.value = `${timeHour.value}:${timeMinute.value} ${timePeriod.value}`;
+  } else {
+    selectedTimeInput.value = '';
+  }
+}
+
+timeHour.addEventListener('change', updateSelectedTime);
+timeMinute.addEventListener('change', updateSelectedTime);
+timePeriod.addEventListener('change', updateSelectedTime);
   const slotsEl = document.getElementById('slots');
   const now = new Date();
   let viewDate = new Date(now.getFullYear(), now.getMonth(), 1);
   let selectedDate = null;
 
-  const slotTimes = ["6:00 AM","8:00 AM","10:00 AM","12:00 PM","2:00 PM","4:00 PM","6:00 PM","8:00 PM","10:00 PM"];
+  
 
   function fmtDate(d){
     return d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'});
   }
 
   function renderSlots(){
-    slotsEl.innerHTML = '<div style="width:100%;font-size:12px;color:#999;margin-top:4px">Preferred pickup time</div>';
-    slotTimes.forEach(t=>{
-      const b=document.createElement('button');
-      b.type='button'; b.className='slot'; b.textContent=t;
-      b.onclick=()=>{
-        [...slotsEl.querySelectorAll('.slot')].forEach(x=>x.classList.remove('selected'));
-        b.classList.add('selected'); selectedTimeInput.value=t;
-      };
-      slotsEl.appendChild(b);
-    });
-  }
+  slotsEl.innerHTML = '';
+}
 
   function renderCalendar(){
     daysEl.innerHTML='';
