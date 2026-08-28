@@ -474,6 +474,7 @@ timePeriod.addEventListener('change', updateSelectedTime);
 
 form.addEventListener('submit', async e=>{
   e.preventDefault();
+  updateSelectedTime();
 
   if(!selectedDateInput.value || !selectedTimeInput.value){
     alert('Please choose a date and preferred time.');
