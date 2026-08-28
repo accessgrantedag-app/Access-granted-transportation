@@ -193,7 +193,19 @@ function renderBooking(b){
     btn.addEventListener("click", async ()=>{
       btn.disabled = true;
       try{
-        await adminRequest({ action:"update_status", id:b.id, status:btn.dataset.status });
+      
+  const result = await adminRequest({ action:"update_status", id:b.id, status:btn.dataset.status });
+
+  if(result.customer_email_sent){
+    alert("Status updated. Customer email sent.");
+  } else if(result.customer_email_error){
+    alert("Status updated, but customer email failed:\n" + result.customer_email_error);
+  } else {
+    alert("Status updated. No customer email was sent.");
+  }
+
+  await loadBookings();
+}
         await loadBookings();
       }catch(error){
         alert(error.message);
