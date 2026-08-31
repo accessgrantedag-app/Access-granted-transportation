@@ -119,7 +119,45 @@ async function showDashboard(){
   dashboard.classList.remove("hidden");
   await loadBookings();
 }
+function showNotice(text, type = "success"){
+  let notice = document.getElementById("statusNotice");
 
+  if(!notice){
+    notice = document.createElement("div");
+    notice.id = "statusNotice";
+    notice.style.position = "fixed";
+    notice.style.top = "20px";
+    notice.style.right = "20px";
+    notice.style.zIndex = "9999";
+    notice.style.maxWidth = "360px";
+    notice.style.padding = "14px 18px";
+    notice.style.borderRadius = "10px";
+    notice.style.fontWeight = "700";
+    notice.style.boxShadow = "0 8px 24px rgba(0,0,0,.35)";
+    notice.style.border = "1px solid #d7af42";
+    document.body.appendChild(notice);
+  }
+
+  notice.textContent = text;
+
+  if(type === "error"){
+    notice.style.background = "#7d2525";
+    notice.style.color = "#fff";
+  } else if(type === "warning"){
+    notice.style.background = "#3a3218";
+    notice.style.color = "#f7d774";
+  } else {
+    notice.style.background = "#151515";
+    notice.style.color = "#d7af42";
+  }
+
+  notice.style.display = "block";
+
+  clearTimeout(window.agNoticeTimer);
+  window.agNoticeTimer = setTimeout(()=>{
+    notice.style.display = "none";
+  }, 3500);
+}
 async function adminRequest(payload){
   const { data } = await sb.auth.getSession();
   const token = data.session?.access_token;
@@ -193,15 +231,21 @@ function renderBooking(b){
     btn.addEventListener("click", async ()=>{
       btn.disabled = true;
       try{
-      
-  const result = await adminRequest({ action:"update_status", id:b.id, status:btn.dataset.status });
+  const newStatus = btn.dataset.status;
+
+if((newStatus === "declined" || newStatus === "cancelled") &&
+   !confirm(`Are you sure you want to mark this booking as ${newStatus}?`)){
+  btn.disabled = false;
+  return;
+}    
+  const result = await adminRequest({ action:"update_status", id:b.id, status:newStatus });
 
   if(result.customer_email_sent){
-    alert("Status updated. Customer email sent.");
+    showNotice("Status updated successfully. Customer email sent.", "success");
   } else if(result.customer_email_error){
-    alert("Status updated, but customer email failed:\n" + result.customer_email_error);
+    showNotice("Status updated, but customer email failed: " + result.customer_email_error, "error");
   } else {
-    alert("Status updated. No customer email was sent.");
+   showNotice("Status updated. No customer email was sent.", "warning");
   }
 
   await loadBookings();
